@@ -110,9 +110,3 @@ public class Scanner_test {
 
     }
 }
-//Admin
-//Password1234!
-//3 attempts
-//Username <> ""
-//Username is not case-sensitive
-//Send src file only via email
