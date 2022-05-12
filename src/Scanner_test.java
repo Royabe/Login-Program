@@ -1,22 +1,20 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
 
 public class Scanner_test {
     public static void main(String[] args) throws IOException  {
         //List of users
-        String[] name = new String[10];
-        String[] pass = new String[10];
+        ArrayList<User> Users = new ArrayList<>();
         Scanner inp = new Scanner(System.in);
         //Initial user
-        name[0]="admin";
-        pass[0]="Password1234!";
-        int numuser = 1; //number of users
+        Users.add(new User("admin","Password1234!"));
         int answer;
         //Options
-        String Username = login(name,pass,numuser);
+        String Username = login(Users);
             do {
                 answer = 3;
                 if(!Username.equals("")) {
@@ -24,13 +22,10 @@ public class Scanner_test {
                     answer = inp.nextInt();
                     if (answer == 1) {
                         //New User
-                        numuser += 1;
-                        String[] temp = newuser();
-                        name[numuser-1] = temp[0];
-                        pass[numuser-1] = temp[1];
+                        Users.add(newuser());
                     } else if (answer == 2) {
                         //Change Login
-                        Username = login(name, pass, numuser);
+                        Username = login(Users);
                     } else if (answer != 3) {
                         //Error
                         System.out.println("Invalid Option");
@@ -38,13 +33,12 @@ public class Scanner_test {
                 }
             }while(answer != 3);
         }
-    public static String[] newuser(){
-        String[] creds = new String[2]; //new account credentials
-        Arrays.fill(creds,"");//initialises array
+    public static User newuser(){
+        User newUser = new User("",""); //new account credentials
         Scanner in = new Scanner(System.in);
         System.out.println("Input new Username");
-        while(creds[0].equals("")) {
-            creds[0] = in.nextLine().toLowerCase();
+        while(newUser.getUsername().equals("")) {
+            newUser.setUsername(in.nextLine().toLowerCase());
         }
         boolean valid = false;
         while(!valid){
@@ -64,37 +58,39 @@ public class Scanner_test {
                 }
             }
             if(Tests[0]&&Tests[1]&&Tests[2]&&Tests[3]){
+                String password = "";
+                for(char c:passtest){
+                    password += c;
+                }
+                newUser.setPassword(password);
                 valid = true;
             } else {
                 System.out.println("Password does not meet requirements\n");
             }
         }
-        return creds;
+        return newUser;
     }
-    public static String login(String[] cname, String[] cpass, int numuser) throws IOException {
+    public static String login(ArrayList<User> Users) throws IOException {
         int counter = 0;
-        int index = 1;
         boolean valid = false;
         Scanner in = new Scanner(System.in);
-        String password;
+        User ValidUser = new User("","");
         do{
-            String name = "";
-
             //enter username
-            while (name.equals("")) {
+            while (ValidUser.getUsername().equals("")) {
                 System.out.println("Enter Username");
-                name = in.nextLine().toLowerCase();
+                ValidUser.setUsername(in.nextLine().toLowerCase());
             }
             counter+=1;
             //enter password
             System.out.println("Enter Password");
             BufferedReader passread = new BufferedReader(new InputStreamReader(System.in));
-            password = passread.readLine();
+            //Scanner passread = new Scanner(System.in);
+            ValidUser.setPassword(passread.readLine());
             //checks username password combo
-            for(int i = 0; i < numuser+1;i++) {
-                if (name.equals(cname[i]) && password.equals(cpass[i])) {
+            for(User i:Users) {
+                if(ValidUser.getUsername().equals(i.getUsername())&&ValidUser.getPassword().equals(i.getPassword())){
                     valid = true;
-                    index = i;
                 }
             }
             //loops if no correct login or counter gets to 3
@@ -102,7 +98,7 @@ public class Scanner_test {
         //result
         if (valid){
             System.out.println("Welcome");
-            return cname[index];
+            return ValidUser.getUsername();
         } else{
             System.out.println("attempt limit reached");
             return "";
